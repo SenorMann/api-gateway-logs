@@ -15,6 +15,7 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     const handler = new NodejsFunction(this, "handler", {
       bundling: { minify: true },
       entry: path.resolve(__dirname, "handlers", "index.ts"),
+      handler: "main",
       memorySize: 256,
       runtime: Runtime.NODEJS_16_X,
       timeout: Duration.seconds(15),
