@@ -16,6 +16,7 @@ const handler = serverless(app, { binary: ['application/json', 'image/*', 'font/
 export async function main(event: APIGatewayEvent, context: Context) {
   try {
     const response = await handler(event, context);
+    console.log(response);
     return response;
   } catch (err: any) {
     console.error(err);
