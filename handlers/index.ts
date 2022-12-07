@@ -11,7 +11,7 @@ app.get("*", (_req, res) => {
   });
 });
 
-const handler = serverless(app, { binary: ['application/json', 'image/*', 'font/*'] });
+const handler = serverless(app, { binary: ['image/*', 'font/*'] });
 
 export async function main(event: APIGatewayEvent, context: Context) {
   try {
