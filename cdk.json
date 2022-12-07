@@ -1,5 +1,5 @@
 {
-  "app": "go mod download && go run api-gateway-logs.go",
+  "app": "npx ts-node --prefer-ts-exts bin/api-gateway-logs.ts",
   "watch": {
     "include": [
       "**"
@@ -7,9 +7,13 @@
     "exclude": [
       "README.md",
       "cdk*.json",
-      "go.mod",
-      "go.sum",
-      "**/*test.go"
+      "**/*.d.ts",
+      "**/*.js",
+      "tsconfig.json",
+      "package*.json",
+      "yarn.lock",
+      "node_modules",
+      "test"
     ]
   },
   "context": {
@@ -27,7 +31,6 @@
     "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
     "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
     "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
-    "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-iam:standardizedServicePrincipals": true,
