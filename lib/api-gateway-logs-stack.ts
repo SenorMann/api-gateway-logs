@@ -32,6 +32,7 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       proxy: true,
       deployOptions: {
         dataTraceEnabled: true,
+        loggingLevel: ApiGateway.MethodLoggingLevel.INFO
       }
     });
 
