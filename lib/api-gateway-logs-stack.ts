@@ -26,12 +26,19 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.ONE_DAY,
     });
+
+    const apiLogs = new LogGroup(this, "api-access-logs", {
+      removalPolicy: RemovalPolicy.DESTROY,
+      retention: RetentionDays.ONE_DAY,
+    })
     
     const api = new ApiGateway.LambdaRestApi(this, "api", {
       handler,
       proxy: true,
       deployOptions: {
         dataTraceEnabled: true,
+        accessLogDestination: new ApiGateway.LogGroupLogDestination(apiLogs),
+        accessLogFormat: ApiGateway.AccessLogFormat.jsonWithStandardFields(),
         loggingLevel: ApiGateway.MethodLoggingLevel.INFO
       }
     });
