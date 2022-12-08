@@ -6,7 +6,7 @@ const app = express();
 
 app.get("*", (_req, res) => {
   res.json({
-    succuss: true,
+    success: true,
     data: {  message: "Hello there, buddy!"  }
   });
 });
