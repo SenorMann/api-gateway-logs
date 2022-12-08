@@ -27,9 +27,18 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       retention: RetentionDays.ONE_DAY,
     });
 
+    // const apiLogGroup = new LogGroup(this, "api-log-group", {
+    //   removalPolicy: RemovalPolicy.DESTROY,
+    //   retention: RetentionDays.ONE_DAY
+    // });
+
+
     const api = new ApiGateway.LambdaRestApi(this, "api", {
       handler,
       proxy: true,
+      deployOptions: {
+        dataTraceEnabled: true,
+      }
     });
 
     new cdk.CfnOutput(this, 'API Gateway URL', {
