@@ -33,6 +33,7 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     // })
 
     const api = new ApiGateway.RestApi(this, "api", {
+      defaultIntegration: new ApiGateway.LambdaIntegration(handler),
       deployOptions: {
         dataTraceEnabled: true,
         // accessLogDestination: new ApiGateway.LogGroupLogDestination(apiLogs),
@@ -42,7 +43,7 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     });
 
     api.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    api.root.addProxy({ defaultIntegration: new ApiGateway.LambdaIntegration(handler) })
+    api.root.addProxy();
     // const apiExecutionLogGroup = LogGroup.fromLogGroupName(
     //   this,
     //   "api-execution-log-group",
