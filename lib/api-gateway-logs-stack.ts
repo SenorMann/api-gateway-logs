@@ -5,7 +5,7 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
-import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { LogGroup, RetentionDays, LogRetention } from 'aws-cdk-lib/aws-logs';
 
 
 export class ApiGatewayLogsStack extends cdk.Stack {
@@ -57,6 +57,11 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     //   retention: RetentionDays.ONE_DAY
     // });
 
+    new LogRetention(this, "log-retention", {
+      logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: RemovalPolicy.DESTROY
+    })
 
     new cdk.CfnOutput(this, 'API Gateway URL', {
       value: api.url as string,
