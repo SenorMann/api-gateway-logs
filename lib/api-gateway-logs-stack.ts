@@ -37,18 +37,19 @@ export class ApiGatewayLogsStack extends cdk.Stack {
         dataTraceEnabled: true,
         // accessLogDestination: new ApiGateway.LogGroupLogDestination(apiLogs),
         // accessLogFormat: ApiGateway.AccessLogFormat.jsonWithStandardFields(),
-        loggingLevel: ApiGateway.MethodLoggingLevel.INFO
+        loggingLevel: ApiGateway.MethodLoggingLevel.INFO,
       }
     });
 
+    api.applyRemovalPolicy(RemovalPolicy.DESTROY);
     api.root.addProxy({ defaultIntegration: new ApiGateway.LambdaIntegration(handler) })
-    const apiExecutionLogGroup = LogGroup.fromLogGroupName(
-      this,
-      "api-execution-log-group",
-      `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`
-    )
+    // const apiExecutionLogGroup = LogGroup.fromLogGroupName(
+    //   this,
+    //   "api-execution-log-group",
+    //   `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`
+    // )
 
-    apiExecutionLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    // apiExecutionLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
     // new LogGroup(this, "api-log-group", {
     //   logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
     //   removalPolicy: RemovalPolicy.DESTROY,
