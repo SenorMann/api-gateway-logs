@@ -31,19 +31,16 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     api.applyRemovalPolicy(RemovalPolicy.DESTROY);
     api.root.addProxy();
 
-    api.node.children.forEach((construct) => {
-      if (construct instanceof LogGroup) {
-        console.log("FOUND!!!!!! IT");
-      } else {
-        console.log(`HEY: ${construct}`)
-      }
-    })
 
-    new LogRetention(this, "log-retention", {
+    const logRetention = new LogRetention(this, "log-retention", {
       logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
       retention: RetentionDays.ONE_DAY,
       removalPolicy: RemovalPolicy.DESTROY,
       logRetentionRetryOptions: {},
+    })
+
+    logRetention.node.children.forEach((construct) => {
+      console.log(`HEY: ${construct}`)
     })
 
     new LogGroup(this, "lambda-log-group", {
