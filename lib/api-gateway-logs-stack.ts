@@ -42,8 +42,8 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     lg.node.findAll().forEach((construct) => {
       if (construct instanceof CfnResource) {
         console.log("YES OH");
+        console.log(construct.logicalId)
         if (construct.cfnResourceType === "AWS::Lambda::Function") {
-          console.log(construct.logicalId)
           // console.log(construct.)
         }
       }
