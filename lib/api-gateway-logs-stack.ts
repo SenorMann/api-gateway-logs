@@ -3,7 +3,7 @@ import { CfnCustomResource, CfnElement, Duration, RemovalPolicy } from 'aws-cdk-
 import * as ApiGateway from "aws-cdk-lib/aws-apigateway";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { CfnLogGroup, LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import * as path from "path";
 
@@ -28,20 +28,17 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       },
     });
 
+    const executionLogGroup = LogGroup.fromLogGroupName(
+      this,
+      "exec-lg",
+      `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`
+    )
+
+    executionLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    (executionLogGroup.node.defaultChild as CfnLogGroup).retentionInDays = RetentionDays.FIVE_DAYS;
+
     api.applyRemovalPolicy(RemovalPolicy.DESTROY);
     api.root.addProxy();
-
-
-    const lg = new LogRetention(this, "log-retention", {
-      logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
-      retention: RetentionDays.ONE_DAY,
-      removalPolicy: RemovalPolicy.DESTROY,
-      logRetentionRetryOptions: {},
-    });
-
-    console.log(`HEY: ${this.resolve((lg.node.defaultChild as CfnCustomResource).logicalId)}`)
-
-    console.log(`HEY: ${lg.logGroupArn}`)
 
 
     new LogGroup(this, "lambda-log-group", {
