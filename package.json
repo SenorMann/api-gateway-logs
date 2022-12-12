@@ -9,7 +9,7 @@
     "build": "tsc",
     "deploy": "cdk deploy --require-approval never --verbose",
     "destroy": "cdk destroy --force --verbose",
-    "synth": "cdk synth --verbose",
+    "synth": "cdk synth --verbose --json",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk"
