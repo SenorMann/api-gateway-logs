@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { CfnCustomResource, CfnElement, Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnCustomResource, CfnElement, CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import * as ApiGateway from "aws-cdk-lib/aws-apigateway";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
@@ -40,8 +40,9 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     });
 
     lg.node.findAll().forEach((construct) => {
-      if (construct instanceof CfnLogGroup) {
+      if (construct instanceof CfnResource) {
         console.log("YES OH");
+        console.log(construct.cfnResourceType)
       }
     })
 
