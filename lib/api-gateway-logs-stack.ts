@@ -28,18 +28,22 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       },
     });
 
-    const executionLogGroup = LogGroup.fromLogGroupName(
-      this,
-      "exec-lg",
-      `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`
-    );
-
-    (executionLogGroup.node.defaultChild as CfnLogGroup).retentionInDays = RetentionDays.FIVE_DAYS;
-    (executionLogGroup.node.defaultChild as CfnLogGroup).applyRemovalPolicy(RemovalPolicy.DESTROY);
-
     api.applyRemovalPolicy(RemovalPolicy.DESTROY);
     api.root.addProxy();
 
+
+    const lg = new LogRetention(this, "log-retention", {
+      logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: RemovalPolicy.DESTROY,
+      logRetentionRetryOptions: {},
+    });
+
+    lg.node.findAll().forEach((construct) => {
+      if (construct instanceof CfnLogGroup) {
+        console.log("YES OH");
+      }
+    })
 
     new LogGroup(this, "lambda-log-group", {
       logGroupName: `/aws/lambda/${handler.functionName}`,
