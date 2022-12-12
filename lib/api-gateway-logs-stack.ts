@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
 import * as ApiGateway from "aws-cdk-lib/aws-apigateway";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
@@ -30,12 +30,22 @@ export class ApiGatewayLogsStack extends cdk.Stack {
 
     api.applyRemovalPolicy(RemovalPolicy.DESTROY);
     api.root.addProxy();
-    
-    new LogRetention(this, "log-retention", {
+
+    const logRetention = new LogRetention(this, "log-retention", {
       logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
       retention: RetentionDays.ONE_DAY,
       removalPolicy: RemovalPolicy.DESTROY,
       logRetentionRetryOptions: {},
+    })
+
+    logRetention.node.findAll().forEach((construct) => {
+      if (construct instanceof Function) {
+        new LogGroup(this, "lambda-log-group", {
+          logGroupName: `/aws/lambda/${construct.functionName}`,
+          removalPolicy: RemovalPolicy.DESTROY,
+          retention: RetentionDays.ONE_DAY,
+        });
+      }
     })
 
     new LogGroup(this, "lambda-log-group", {
