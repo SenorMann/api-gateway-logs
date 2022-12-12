@@ -27,8 +27,8 @@ jobs:
       - name: Run CDK Synth
         run: npm run synth
 
-      - name: Archive CDK Synth output
-        uses: actions/upload-artifact@v3
-        with:
-          name: archive synth
-          path: cdk.out
+      # - name: Archive CDK Synth output
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: archive synth
+      #     path: cdk.out
