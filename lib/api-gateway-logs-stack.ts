@@ -37,17 +37,12 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       logRetentionRetryOptions: {},
     });
 
-    console.log(`HEY: ${(lg.node.defaultChild as CfnResource).logicalId}`)
 
-    // lg.node.findAll().forEach((construct) => {
-    //   if (construct instanceof CfnResource) {
-    //     console.log("YES OH");
-    //     console.log(construct.logicalId)
-    //     if (construct.cfnResourceType === "AWS::Lambda::Function") {
-    //       // console.log(construct.)
-    //     }
-    //   }
-    // })
+    new LogGroup(this, "log-retention-log-group", {
+      logGroupName: `/aws/lambda/${(lg.node.defaultChild as CfnResource).logicalId}}`,
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: RemovalPolicy.DESTROY,
+    })
 
     new LogGroup(this, "lambda-log-group", {
       logGroupName: `/aws/lambda/${handler.functionName}`,
