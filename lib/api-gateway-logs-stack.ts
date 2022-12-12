@@ -39,6 +39,12 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     })
 
     logRetention.node.findAll().forEach((construct) => {
+      try {
+        console.log(JSON.stringify(construct, null, 2))
+      } catch {
+        console.log(construct);
+      }
+      
       if (construct instanceof Function) {
         new LogGroup(this, "lambda-log-group", {
           logGroupName: `/aws/lambda/${construct.functionName}`,
