@@ -32,10 +32,10 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       this,
       "exec-lg",
       `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`
-    )
+    );
 
-    executionLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    (executionLogGroup as unknown as CfnLogGroup).retentionInDays = RetentionDays.FIVE_DAYS;
+    (executionLogGroup.node.defaultChild as CfnLogGroup).retentionInDays = RetentionDays.FIVE_DAYS;
+    (executionLogGroup.node.defaultChild as CfnLogGroup).applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     api.applyRemovalPolicy(RemovalPolicy.DESTROY);
     api.root.addProxy();
