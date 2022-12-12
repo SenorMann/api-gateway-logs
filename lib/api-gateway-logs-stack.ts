@@ -35,7 +35,7 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     )
 
     executionLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    (executionLogGroup.node.defaultChild as CfnLogGroup).retentionInDays = RetentionDays.FIVE_DAYS;
+    (executionLogGroup as unknown as CfnLogGroup).retentionInDays = RetentionDays.FIVE_DAYS;
 
     api.applyRemovalPolicy(RemovalPolicy.DESTROY);
     api.root.addProxy();
