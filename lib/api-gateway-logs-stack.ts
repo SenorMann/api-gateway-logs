@@ -39,7 +39,10 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       logRetentionRetryOptions: {},
     });
 
-    console.log(`HEY: ${this.getLogicalId(lg.node.defaultChild as CfnCustomResource)}`)
+    console.log(`HEY: ${this.resolve((lg.node.defaultChild as CfnCustomResource).logicalId)}`)
+
+    console.log(`HEY: ${lg.logGroupArn}`)
+
 
     new LogGroup(this, "lambda-log-group", {
       logGroupName: `/aws/lambda/${handler.functionName}`,
