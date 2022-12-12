@@ -1,12 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import * as ApiGateway from "aws-cdk-lib/aws-apigateway";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
-import * as path from "path";
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
-import { LogGroup, RetentionDays, LogRetention } from 'aws-cdk-lib/aws-logs';
-
+import * as ApiGateway from "aws-cdk-lib/aws-apigateway";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { Construct } from 'constructs';
+import * as path from "path";
 
 export class ApiGatewayLogsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -21,47 +20,29 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       timeout: Duration.seconds(15),
     });
 
+    const api = new ApiGateway.RestApi(this, "api", {
+      defaultIntegration: new ApiGateway.LambdaIntegration(handler),
+      deployOptions: {
+        dataTraceEnabled: true,
+        loggingLevel: ApiGateway.MethodLoggingLevel.INFO,
+      },
+    });
+
+    api.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    api.root.addProxy();
+    
+    new LogRetention(this, "log-retention", {
+      logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: RemovalPolicy.DESTROY,
+      logRetentionRetryOptions: {},
+    })
+
     new LogGroup(this, "lambda-log-group", {
       logGroupName: `/aws/lambda/${handler.functionName}`,
       removalPolicy: RemovalPolicy.DESTROY,
       retention: RetentionDays.ONE_DAY,
     });
-
-    // const apiLogs = new LogGroup(this, "api-access-logs", {
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   retention: RetentionDays.ONE_DAY,
-    // })
-
-    const api = new ApiGateway.RestApi(this, "api", {
-      defaultIntegration: new ApiGateway.LambdaIntegration(handler),
-      deployOptions: {
-        dataTraceEnabled: true,
-        // accessLogDestination: new ApiGateway.LogGroupLogDestination(apiLogs),
-        // accessLogFormat: ApiGateway.AccessLogFormat.jsonWithStandardFields(),
-        loggingLevel: ApiGateway.MethodLoggingLevel.INFO,
-      }
-    });
-
-    api.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    api.root.addProxy();
-    // const apiExecutionLogGroup = LogGroup.fromLogGroupName(
-    //   this,
-    //   "api-execution-log-group",
-    //   `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`
-    // )
-
-    // apiExecutionLogGroup.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    // new LogGroup(this, "api-log-group", {
-    //   logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   retention: RetentionDays.ONE_DAY
-    // });
-
-    new LogRetention(this, "log-retention", {
-      logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
-      retention: RetentionDays.ONE_DAY,
-      removalPolicy: RemovalPolicy.DESTROY
-    })
 
     new cdk.CfnOutput(this, 'API Gateway URL', {
       value: api.url as string,
