@@ -48,14 +48,12 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     });
 
     this.node.findAll().forEach((construct) => {
-      if (construct instanceof CfnFunction || construct instanceof CfnResource) {
+      if (construct instanceof CfnResource) {
         const functionId = this.resolve(construct.logicalId) as string;
 
         if (functionId.includes("LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a") && construct.cfnResourceType === "AWS::Lambda::Function") {
-          const functionName = construct.getAtt("FunctionName").toString()
-
-          console.log(`Function Name: ${functionName}`);
-          console.log(`Func Name: ${this.resolve(functionName)}`)
+          const functionName = "LogRetentionLambda";
+          construct.addPropertyOverride("FunctionName", functionName);
 
           new LogGroup(this, "api-execution-log-group", {
             logGroupName: `/aws/lambda/${functionName}`,
