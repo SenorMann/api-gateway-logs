@@ -37,7 +37,13 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       logRetentionRetryOptions: {},
     });
 
-    console.log(`HEY: ${this.resolve((lg.node.defaultChild as CfnResource).logicalId)}`)
+
+    lg.node.findAll().forEach((construct) => {
+      console.log(`HEY: ${this.resolve((construct as CfnResource).logicalId)}`)
+      console.log(`TYPE: ${(construct as CfnResource).cfnResourceType}`)
+    })
+
+    // console.log(`HEY: ${this.resolve((lg.node.defaultChild as CfnResource).logicalId)}`)
 
     // new LogGroup(this, "log-retention-log-group", {
     //   logGroupName: `/aws/lambda/${(lg.node.defaultChild as CfnResource).logicalId}}`,
