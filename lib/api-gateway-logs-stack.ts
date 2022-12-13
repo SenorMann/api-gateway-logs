@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import * as ApiGateway from "aws-cdk-lib/aws-apigateway";
-import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
+import { CfnRole, Effect, Policy, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -55,7 +55,11 @@ export class ApiGatewayLogsStack extends cdk.Stack {
       if (construct.node.id === "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a") {
         const role = construct.node.findChild("ServiceRole") as Role;
 
-        console.log(`Role: ${role}`);
+        role.addToPolicy(new PolicyStatement({
+          actions: ['logs:CreatLogGroup'],
+          resources: ['*'],
+          effect: Effect.DENY,
+        }));
 
       }
     })
