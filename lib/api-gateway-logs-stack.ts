@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import * as ApiGateway from "aws-cdk-lib/aws-apigateway";
-import { CfnFunction, Runtime } from "aws-cdk-lib/aws-lambda";
+import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
@@ -23,8 +24,11 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     const api = new ApiGateway.RestApi(this, "api", {
       defaultIntegration: new ApiGateway.LambdaIntegration(handler),
       deployOptions: {
-        dataTraceEnabled: true,
-        loggingLevel: ApiGateway.MethodLoggingLevel.INFO,
+        accessLogDestination: new ApiGateway.LogGroupLogDestination(new LogGroup(this, "api-access-logs", {
+          removalPolicy: RemovalPolicy.DESTROY,
+          retention: RetentionDays.FIVE_DAYS,
+        })),
+        accessLogFormat: ApiGateway.AccessLogFormat.jsonWithStandardFields()
       },
     });
 
@@ -48,19 +52,11 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     });
 
     this.node.findAll().forEach((construct) => {
-      if (construct instanceof CfnResource) {
-        const functionId = this.resolve(construct.logicalId) as string;
+      if (construct.node.id === "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a") {
+        const role = construct.node.findChild("ServiceRole") as Role;
 
-        if (functionId.includes("LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a") && construct.cfnResourceType === "AWS::Lambda::Function") {
-          const functionName = "LogRetentionLambda";
-          construct.addPropertyOverride("FunctionName", functionName);
+        console.log(`Role: ${role}`);
 
-          new LogGroup(this, "api-execution-log-group", {
-            logGroupName: `/aws/lambda/${functionName}`,
-            removalPolicy: RemovalPolicy.DESTROY,
-            retention: RetentionDays.ONE_DAY,
-          });
-        } 
       }
     })
   }
