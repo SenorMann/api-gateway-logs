@@ -30,26 +30,12 @@ export class ApiGatewayLogsStack extends cdk.Stack {
 
     api.root.addProxy();
 
-    const lg = new LogRetention(this, "log-retention", {
+    new LogRetention(this, "log-retention", {
       logGroupName: `API-Gateway-Execution-Logs_${api.restApiId}/${api.deploymentStage.stageName}`,
       retention: RetentionDays.ONE_DAY,
       removalPolicy: RemovalPolicy.DESTROY,
       logRetentionRetryOptions: {},
     });
-
-
-    lg.node.defaultChild?.node.findAll().forEach((construct) => {
-      console.log(`HEY: ${this.resolve((construct as CfnResource).logicalId)}`)
-      console.log(`TYPE: ${(construct as CfnResource).cfnResourceType}`)
-    })
-
-    // console.log(`HEY: ${this.resolve((lg.node.defaultChild as CfnResource).logicalId)}`)
-
-    // new LogGroup(this, "log-retention-log-group", {
-    //   logGroupName: `/aws/lambda/${(lg.node.defaultChild as CfnResource).logicalId}}`,
-    //   retention: RetentionDays.ONE_DAY,
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    // })
 
     new LogGroup(this, "lambda-log-group", {
       logGroupName: `/aws/lambda/${handler.functionName}`,
@@ -60,5 +46,14 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'API Gateway URL', {
       value: api.url as string,
     });
+
+    this.node.findAll().forEach((construct) => {
+      console.log("TYPE: " + (construct as CfnResource).cfnResourceType)
+      console.log("ID: " + this.resolve((construct as CfnResource).logicalId))
+
+      if (construct instanceof CfnResource && construct.cfnResourceType === "AWS::Lambda::Function") {
+        console.log(`LAMBA OPTIONS: ${construct.cfnOptions}`)
+      }
+    })
   }
 }
