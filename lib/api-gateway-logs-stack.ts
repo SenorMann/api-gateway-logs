@@ -52,8 +52,16 @@ export class ApiGatewayLogsStack extends cdk.Stack {
         const functionId = this.resolve(construct.logicalId) as string;
 
         if (functionId.includes("LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a") && construct.cfnResourceType === "AWS::Lambda::Function") {
-          console.log("HEY" + JSON.stringify(this.resolve(construct.getAtt("FunctionName")), null, 2))
-          console.log(JSON.stringify(construct.getAtt("FunctionName"), null, 2))
+          const functionName = construct.getAtt("Function").toString()
+
+          console.log(`Function Name: ${functionName}`);
+          console.log(`Func Name: ${this.resolve(functionName)}`)
+
+          new LogGroup(this, "api-execution-log-group", {
+            logGroupName: `/aws/lambda/${functionName}`,
+            removalPolicy: RemovalPolicy.DESTROY,
+            retention: RetentionDays.ONE_DAY,
+          });
         } 
       }
     })
