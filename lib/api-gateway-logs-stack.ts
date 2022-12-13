@@ -48,11 +48,12 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     });
 
     this.node.findAll().forEach((construct) => {
-      if (construct instanceof CfnFunction) {
+      if (construct instanceof CfnFunction || construct instanceof CfnResource) {
         const functionId = this.resolve(construct.logicalId) as string;
         console.log(`Function Id: ${this.resolve(construct.logicalId)}`);
+        console.log(`Type: ${construct.cfnResourceType}`)
 
-        if (functionId.startsWith("LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a")) {
+        if (functionId.includes("LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a")) {
           console.log("FOUND YOU!!!!");
           console.log("HEY" + this.resolve(construct.getAtt("FunctionName")))
         } 
