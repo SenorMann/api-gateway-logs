@@ -38,7 +38,7 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     });
 
 
-    lg.node.findAll().forEach((construct) => {
+    lg.node.defaultChild?.node.findAll().forEach((construct) => {
       console.log(`HEY: ${this.resolve((construct as CfnResource).logicalId)}`)
       console.log(`TYPE: ${(construct as CfnResource).cfnResourceType}`)
     })
