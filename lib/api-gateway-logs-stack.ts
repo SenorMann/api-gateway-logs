@@ -46,5 +46,17 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'API Gateway URL', {
       value: api.url as string,
     });
+
+    this.node.findAll().forEach((construct) => {
+      if (construct instanceof CfnFunction) {
+        const functionId = this.resolve(construct.logicalId) as string;
+        console.log(`Function Id: ${this.resolve(construct.logicalId)}`);
+
+        if (functionId.startsWith("LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a")) {
+          console.log("FOUND YOU!!!!");
+          console.log("HEY" + this.resolve(construct.getAtt("FunctionName")))
+        } 
+      }
+    })
   }
 }
