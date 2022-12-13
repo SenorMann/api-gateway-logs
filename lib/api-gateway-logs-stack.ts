@@ -46,12 +46,5 @@ export class ApiGatewayLogsStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'API Gateway URL', {
       value: api.url as string,
     });
-
-    this.node.findAll().forEach((construct) => {
-      if (construct instanceof LogRetention) {
-        const child = construct.node.findChild("Resource") as CfnResource;
-        console.log("TYPE: " + child.cfnResourceType);
-      }
-    })
   }
 }
